@@ -1,9 +1,7 @@
 # Lighting
 
 * Chrome: __Updated August 2022 - sound and graphics are corrupt on the latest macOS desktop browser__
-* Firefox works OK.
-* Untested on Safari.
-* Edge lags too much to be playable. 
+* Firefox, Safari, and Edge (Chromium version) work OK.
 
 ## Mentions
 
