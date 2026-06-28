@@ -2450,8 +2450,8 @@
     constructor() {
       __publicField(this, "humanHitPoints");
       __publicField(this, "aiHitPoints");
-      this.humanHitPoints = 1;
-      this.aiHitPoints = 1;
+      this.humanHitPoints = MAX_HP;
+      this.aiHitPoints = MAX_HP;
     }
   };
   var vitals = new Vitals();
