@@ -112,7 +112,10 @@ export class StandeeSpriteWrapper {
         this.textureWrapper = standeeAnimationTextureBase.newInstance();
         let material = new THREE.SpriteMaterial({map: this.textureWrapper.texture});
         this.sprite = new THREE.Sprite(material);
-        this.sprite.scale.set(1, 1.5); // Adjust aspect ratio for 48 x 72 size frames. 
+        // The third (z) arg is required: THREE r82's Vector3.set(x, y) leaves z
+        // undefined -> NaN scale matrix -> the GPU discards the sprite, making the
+        // entire crowd invisible. Keep the original 1 x 1.5 size, just add the z.
+        this.sprite.scale.set(1, 1.5, 1); // Adjust aspect ratio for 48 x 72 size frames.
         this.group.add(this.sprite);
 
         // Half size them and position their feet on the ground.
