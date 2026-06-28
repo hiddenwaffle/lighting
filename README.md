@@ -32,24 +32,30 @@ A popular real-life hack is the repurposing of office building lights to simulat
 
 ## Building
 
-Install the latest gulp-cli if not already installed. This project was built with CLI version 1.2.2. 
+Install dependencies (only [esbuild](https://esbuild.github.io/) is needed; the
+original gulp/browserify/tsify toolchain has been retired).
 <pre>
-npm install gulpjs/gulp-cli -g
+npm install
 </pre>
 
-Run the default task to build the dist directory and start a server for it.
+Build the dist directory once:
 <pre>
-gulp
+npm run build
 </pre>
 
-The dist directory can be removed with the clean task
+Or run a watching dev server (rebuilds on source changes, serves at http://localhost:8080):
 <pre>
-gulp clean
+npm run dev
+</pre>
+
+The dist directory can be removed with:
+<pre>
+npm run clean
 </pre>
 
 ## Dependencies
 
-* [gulp](http://gulpjs.com/) - Trying something new after having using grunt with my previous project.
+* [esbuild](https://esbuild.github.io/) - Bundles the TypeScript sources; replaced the original gulp + browserify + tsify pipeline.
 * [three.js](https://threejs.org/) - This is my first 3D game.
 * [tween.js](https://github.com/tweenjs/tween.js) - Easing functions for camera, NPC travel, light strobing, etc...
 * [howler.js](https://howlerjs.com/) - I had a good experience using this with [mazing](https://github.com/hiddenwaffle/mazing) so I used it again.

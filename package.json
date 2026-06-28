@@ -1,15 +1,14 @@
 {
+  "name": "lighting",
+  "version": "1.0.0",
+  "private": true,
+  "description": "A game built with Three.js, Howler.js, and Tween.js.",
+  "scripts": {
+    "clean": "rm -rf dist",
+    "build": "node scripts/build.mjs",
+    "dev": "node scripts/build.mjs --serve --watch"
+  },
   "devDependencies": {
-    "browser-sync": "^2.17.5",
-    "browserify": "^13.1.1",
-    "del": "^2.2.2",
-    "gulp": "github:gulpjs/gulp#4.0",
-    "gulp-cached": "^1.1.0",
-    "gulp-uglify": "^2.0.0",
-    "gulp-webserver": "^0.9.1",
-    "tsify": "^2.0.2",
-    "typescript": "^2.0.7",
-    "vinyl-buffer": "^1.0.0",
-    "vinyl-source-stream": "^1.1.0"
+    "esbuild": "^0.25.0"
   }
 }

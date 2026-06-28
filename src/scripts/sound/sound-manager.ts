@@ -57,6 +57,39 @@ class SoundManager {
      */
     attach() {
         this.updateSoundSetting();
+        this.unlockAudioOnFirstGesture();
+    }
+
+    /**
+     * Modern browsers start the Web Audio context in a "suspended" state and
+     * refuse to play audio until the user interacts with the page. The upgrade
+     * to Howler 2.2.4 is the primary fix: its built-in autoUnlock resumes the
+     * context (and un-defers sounds that were queued while suspended) on the
+     * first click / keydown / touch. The old vendored Howler 2.0.1 only unlocked
+     * on iOS touch events, so on desktop the context stayed suspended forever.
+     *
+     * This explicit resume is kept as a belt-and-suspenders fallback and also
+     * covers the context being auto-suspended again after a long idle period.
+     */
+    private unlockAudioOnFirstGesture() {
+        let resume = () => {
+            try {
+                if (Howler.ctx && Howler.ctx.state === 'suspended') {
+                    let resumed = Howler.ctx.resume();
+                    if (resumed && resumed.catch) {
+                        resumed.catch(() => {}); // Ignore rejection (e.g. still no gesture trust).
+                    }
+                }
+            } catch (e) {
+                // No Web Audio context (e.g. HTML5-audio fallback); nothing to resume.
+            }
+            window.removeEventListener('pointerdown', resume);
+            window.removeEventListener('touchend', resume);
+            window.removeEventListener('keydown', resume);
+        };
+        window.addEventListener('pointerdown', resume);
+        window.addEventListener('touchend', resume);
+        window.addEventListener('keydown', resume);
     }
 
     start() {
