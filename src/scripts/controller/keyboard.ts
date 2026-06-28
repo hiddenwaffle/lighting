@@ -124,8 +124,13 @@ class Keyboard {
         if (state === State.Down) {
             this.currentKeyCode = event.keyCode;
         } else if (state == State.Up) {
-            this.currentKeyCode = -1;
-            this.previousKeyCode = -1;
+            // Only clear the tracked key if the key being released is the one
+            // currently held. Otherwise releasing an incidental key cancels the
+            // in-progress auto-repeat of a still-held movement key.
+            if (event.keyCode === this.currentKeyCode) {
+                this.currentKeyCode = -1;
+                this.previousKeyCode = -1;
+            }
        }
 
        let key = this.keyCodeToKey(event.keyCode);

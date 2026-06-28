@@ -2,13 +2,17 @@
 //
 // Replaces the original gulp + browserify + tsify toolchain (which no longer
 // installs on modern Node) with esbuild. Behaviour mirrors the old gulpfile:
-//   - copy everything in src/static/** into dist/
-//   - bundle src/scripts/main.ts (TypeScript) into dist/bundle.js
-//   - optionally watch sources and serve dist/ over HTTP
+//   - copy everything in src/static/** into the output dir
+//   - bundle src/scripts/main.ts (TypeScript) into <outdir>/bundle.js
+//   - optionally watch sources and serve over HTTP
 //
 // Usage:
-//   node scripts/build.mjs            one-off production-ish build
-//   node scripts/build.mjs --serve --watch   dev server with live rebuilds
+//   node scripts/build.mjs                    one-off build into dist/
+//   node scripts/build.mjs --serve --watch    dev server with live rebuilds
+//   node scripts/build.mjs --deploy           build into docs/ (the GitHub Pages dir)
+//
+// GitHub Pages serves the committed docs/ directory, so `--deploy` builds there;
+// commit docs/ to publish. Without --deploy everything targets gitignored dist/.
 //
 // The vendored libraries (three.js, Tween.js, howler.js, OBJ/MTL loaders) live
 // in src/static and are loaded via <script> tags, so they are copied verbatim
@@ -19,17 +23,19 @@ import { cpSync, mkdirSync, rmSync, watch as fsWatch } from 'fs';
 
 const watch = process.argv.includes('--watch');
 const serve = process.argv.includes('--serve');
+const deploy = process.argv.includes('--deploy');
+const OUTDIR = deploy ? 'docs' : 'dist';
 const PORT = 8080;
 
-// Copy vendored libs / assets / index.html into dist. Skip macOS .DS_Store junk.
-// `clean` wipes dist first (initial build); without it we just overwrite, so a
+// Copy vendored libs / assets / index.html into OUTDIR. Skip macOS .DS_Store junk.
+// `clean` wipes OUTDIR first (initial build); without it we just overwrite, so a
 // static re-copy during `--watch` does not clobber the freshly built bundle.js.
 function copyStatic({ clean = false } = {}) {
   if (clean) {
-    rmSync('dist', { recursive: true, force: true });
-    mkdirSync('dist', { recursive: true });
+    rmSync(OUTDIR, { recursive: true, force: true });
+    mkdirSync(OUTDIR, { recursive: true });
   }
-  cpSync('src/static', 'dist', { recursive: true, filter: (src) => !src.endsWith('.DS_Store') });
+  cpSync('src/static', OUTDIR, { recursive: true, filter: (src) => !src.endsWith('.DS_Store') });
 }
 
 copyStatic({ clean: true });
@@ -37,9 +43,9 @@ copyStatic({ clean: true });
 const ctx = await esbuild.context({
   entryPoints: ['src/scripts/main.ts'],
   bundle: true,
-  outfile: 'dist/bundle.js',
+  outfile: `${OUTDIR}/bundle.js`,
   target: 'es2015',
-  sourcemap: true,
+  sourcemap: !deploy, // external map for dev/dist; keep the published docs/ build lean
   logLevel: 'info',
 });
 
@@ -56,11 +62,11 @@ if (watch || serve) {
     console.log('Watching src/static for changes...');
   }
   if (serve) {
-    const { port } = await ctx.serve({ servedir: 'dist', port: PORT });
+    const { port } = await ctx.serve({ servedir: OUTDIR, port: PORT });
     console.log(`Serving http://localhost:${port} (Ctrl+C to stop)`);
   }
 } else {
   await ctx.rebuild();
   await ctx.dispose();
-  console.log('Build complete -> dist/');
+  console.log(`Build complete -> ${OUTDIR}/`);
 }

@@ -7,8 +7,11 @@ class Vitals {
     aiHitPoints: number;
 
     constructor() {
-        this.humanHitPoints = MAX_HP;
-        this.aiHitPoints = MAX_HP;
+        // ⚠️ TEMP DEBUG: HP forced to 1 so the game ends after a single top-out,
+        // to reach the end screen quickly. REVERT both to MAX_HP before shipping
+        // (and re-run `npm run deploy`). The deployed docs/ build does NOT have this.
+        this.humanHitPoints = 1;
+        this.aiHitPoints = 1;
     }
 }
 export const vitals = new Vitals();

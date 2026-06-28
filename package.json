@@ -6,7 +6,8 @@
   "scripts": {
     "clean": "rm -rf dist",
     "build": "node scripts/build.mjs",
-    "dev": "node scripts/build.mjs --serve --watch"
+    "dev": "node scripts/build.mjs --serve --watch",
+    "deploy": "node scripts/build.mjs --deploy"
   },
   "devDependencies": {
     "esbuild": "^0.25.0"

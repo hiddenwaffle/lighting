@@ -486,7 +486,10 @@ export class Board {
     calculateBumpiness(): number {
         let bumpiness = 0;
         let colHeights = this.calculateColumnHeights();
-        for (let idx = 0; idx < colHeights.length - 2; idx++) {
+        // length - 1: there are N-1 adjacent column pairs for N columns. The old
+        // `length - 2` dropped the final (rightmost) pair, biasing the AI's
+        // bumpiness heuristic.
+        for (let idx = 0; idx < colHeights.length - 1; idx++) {
             let val1 = colHeights[idx];
             let val2 = colHeights[idx + 1];
             bumpiness += Math.abs(val1 - val2);
